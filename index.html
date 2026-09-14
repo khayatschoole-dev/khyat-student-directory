@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>دليل طلاب خياط</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="دليل خياط">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#152238;
+    --ink-soft:#4b5877;
+    --paper:#eef1f4;
+    --card:#ffffff;
+    --line:#dde2ea;
+    --ochre:#b8823c;
+    --ochre-deep:#8f6329;
+    --teal:#2f6f62;
+    --teal-soft:#e4efec;
+    --rose:#a8412c;
+    --rose-soft:#f7e8e4;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Tajawal',system-ui,sans-serif;
+    min-height:100vh;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  /* ---------- Gate ---------- */
+  #gate{
+    position:fixed; inset:0; background:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+    z-index:200; padding:24px;
+  }
+  #gate.hidden{display:none;}
+  .gate-box{
+    width:100%; max-width:320px; text-align:center; color:#fff;
+  }
+  .gate-mark{
+    width:56px;height:56px;border-radius:16px;background:var(--ochre);
+    display:flex;align-items:center;justify-content:center;
+    font-size:26px;font-weight:900;color:var(--ink);margin:0 auto 18px;
+  }
+  .gate-box h1{font-size:20px;margin:0 0 4px;font-weight:700;}
+  .gate-box p{font-size:13px;color:#aab3c6;margin:0 0 22px;}
+  .gate-box input{
+    width:100%; padding:14px 16px; border-radius:12px; border:none;
+    font-size:17px; text-align:center; letter-spacing:4px;
+    font-family:'Tajawal',sans-serif; background:#232f49; color:#fff;
+    margin-bottom:12px;
+  }
+  .gate-box input::placeholder{color:#6b7593; letter-spacing:normal;}
+  .gate-box button{
+    width:100%; padding:14px; border-radius:12px; border:none;
+    background:var(--ochre); color:var(--ink); font-weight:700; font-size:15px;
+    font-family:'Tajawal',sans-serif;
+  }
+  #gate-error{color:#e08a76; font-size:13px; height:18px; margin-top:10px;}
+
+  /* ---------- App shell ---------- */
+  #app{display:none;}
+  #app.visible{display:block;}
+  header.top{
+    position:sticky; top:0; z-index:20;
+    background:var(--ink); color:#fff;
+    padding:16px 18px calc(16px + 4px);
+    border-radius:0 0 20px 20px;
+  }
+  header.top .row1{display:flex; align-items:center; justify-content:space-between;}
+  header.top h1{font-size:18px; margin:0; font-weight:700;}
+  header.top .sub{font-size:12px; color:#9aa5c0; margin-top:2px;}
+  .count-pill{
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12);
+    color:#d9c090; font-size:12px; padding:4px 10px; border-radius:99px;
+  }
+  .search-wrap{margin-top:14px; position:relative;}
+  .search-wrap input{
+    width:100%; padding:12px 40px 12px 14px; border-radius:12px; border:none;
+    font-size:15px; font-family:'Tajawal',sans-serif; background:#fff; color:var(--ink);
+  }
+  .search-wrap svg{position:absolute; right:13px; top:12px; width:18px; height:18px; opacity:.45;}
+
+  main{padding:14px 14px 40px;}
+  .stage-tabs{display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; margin-bottom:12px;}
+  .stage-tabs button{
+    flex:0 0 auto; padding:8px 14px; border-radius:99px; border:1px solid var(--line);
+    background:var(--card); color:var(--ink-soft); font-size:13px; font-family:'Tajawal',sans-serif;
+  }
+  .stage-tabs button.active{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+  .list{display:flex; flex-direction:column; gap:10px;}
+  .s-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:13px 14px; display:flex; align-items:center; gap:12px; cursor:pointer;
+  }
+  .s-card:active{background:#f3f5f8;}
+  .s-avatar{
+    width:42px;height:42px;border-radius:11px;background:var(--teal-soft);color:var(--teal);
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex:0 0 auto;
+  }
+  .s-info{flex:1; min-width:0;}
+  .s-info .name{font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .s-info .meta{font-size:12.5px; color:var(--ink-soft); margin-top:2px; display:flex; gap:8px; flex-wrap:wrap;}
+  .flag-dot{width:8px;height:8px;border-radius:50%; flex:0 0 auto;}
+  .flag-dot.health{background:var(--rose);}
+  .flag-dot.social{background:var(--ochre);}
+  .flags{display:flex; gap:4px; align-items:center;}
+  .chev{color:#c3cad6; font-size:18px;}
+
+  .empty, .loading{text-align:center; color:var(--ink-soft); padding:60px 20px; font-size:14px;}
+  .loading .spin{
+    width:26px;height:26px;border-radius:50%;border:3px solid var(--line); border-top-color:var(--ochre);
+    margin:0 auto 12px; animation:sp .8s linear infinite;
+  }
+  @keyframes sp{to{transform:rotate(360deg);}}
+
+  /* ---------- Detail sheet ---------- */
+  #overlay{position:fixed; inset:0; background:rgba(21,34,56,.45); z-index:50; display:none;}
+  #overlay.visible{display:block;}
+  #sheet{
+    position:fixed; left:0; right:0; bottom:0; z-index:60;
+    background:var(--paper); border-radius:20px 20px 0 0;
+    max-height:92vh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    transform:translateY(100%); transition:transform .28s ease;
+    padding-bottom:calc(30px + env(safe-area-inset-bottom));
+  }
+  #sheet.visible{transform:translateY(0);}
+  .sheet-handle{width:40px;height:4px;background:var(--line); border-radius:99px; margin:10px auto 4px;}
+  .sheet-head{padding:10px 18px 16px; display:flex; align-items:flex-start; justify-content:space-between; gap:10px;}
+  .sheet-head .name{font-size:19px; font-weight:900; line-height:1.3;}
+  .sheet-head .id{font-size:12.5px; color:var(--ink-soft); margin-top:3px;}
+  .sheet-close{
+    width:30px;height:30px;border-radius:50%;background:var(--card);border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center; font-size:15px; color:var(--ink-soft); flex:0 0 auto;
+  }
+  .sheet-body{padding:0 18px 10px;}
+  .field-card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; margin-bottom:12px;}
+  .field-card .lbl{font-size:11.5px; color:var(--ink-soft); margin-bottom:3px;}
+  .field-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--line);}
+  .field-row:last-child{border-bottom:none;}
+  .field-row .lbl{font-size:12.5px; color:var(--ink-soft);}
+  .field-row .val{font-size:14.5px; font-weight:500; text-align:left;}
+  .edit-input{
+    border:1px solid var(--line); border-radius:8px; padding:7px 10px; font-size:14px;
+    font-family:'Tajawal',sans-serif; text-align:left; width:150px; background:#fbfcfd;
+  }
+  .actions-row{display:flex; gap:8px; margin-top:6px;}
+  .btn{
+    flex:1; padding:10px; border-radius:10px; border:none; font-size:13.5px; font-weight:700;
+    font-family:'Tajawal',sans-serif; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center; gap:6px;
+  }
+  .btn-call{background:var(--teal-soft); color:var(--teal);}
+  .btn-wa{background:#dcf3e5; color:#1f7a44;}
+  .btn-save{background:var(--ink); color:#fff;}
+  .btn-edit{background:var(--card); color:var(--ink-soft); border:1px solid var(--line);}
+
+  .section-title{font-size:14px; font-weight:700; margin:18px 2px 8px; display:flex; align-items:center; gap:7px;}
+  .section-title .dot{width:9px;height:9px;border-radius:50%;}
+  .case-item{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:12px 14px; margin-bottom:8px;}
+  .case-item .top{display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;}
+  .case-item .type{font-size:13px; font-weight:700;}
+  .case-item .date{font-size:11.5px; color:var(--ink-soft);}
+  .case-item .desc{font-size:13px; color:var(--ink-soft); line-height:1.7;}
+  .case-item .rec{font-size:12.5px; color:var(--teal); margin-top:6px; line-height:1.6;}
+  .case-empty{font-size:13px; color:#9aa5c0; padding:10px 2px;}
+  .save-toast{
+    position:fixed; bottom:24px; right:50%; transform:translateX(50%);
+    background:var(--ink); color:#fff; padding:10px 20px; border-radius:99px; font-size:13px;
+    z-index:100; opacity:0; transition:opacity .25s;
+  }
+  .save-toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-mark">خ</div>
+    <h1>دليل طلاب خياط</h1>
+    <p>مدرسة الشيخ عبدالله خياط المتوسطة</p>
+    <input id="gate-pass" type="password" inputmode="numeric" placeholder="كلمة المرور">
+    <button onclick="checkGate()">دخول</button>
+    <div id="gate-error"></div>
+  </div>
+</div>
+
+<div id="app">
+  <header class="top">
+    <div class="row1">
+      <div>
+        <h1>دليل الطلاب</h1>
+        <div class="sub">الشيخ عبدالله خياط المتوسطة</div>
+      </div>
+      <div class="count-pill" id="count-pill">— طالب</div>
+    </div>
+    <div class="search-wrap">
+      <input id="search" type="text" placeholder="ابحث بالاسم، رقم الهوية، الصف، أو جوال ولي الأمر">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    </div>
+  </header>
+  <main>
+    <div class="stage-tabs" id="stage-tabs"></div>
+    <div id="list" class="list"></div>
+  </main>
+</div>
+
+<div id="overlay" onclick="closeSheet()"></div>
+<div id="sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-head">
+    <div>
+      <div class="name" id="sh-name">—</div>
+      <div class="id" id="sh-idclass">—</div>
+    </div>
+    <div class="sheet-close" onclick="closeSheet()">✕</div>
+  </div>
+  <div class="sheet-body">
+    <div class="field-card">
+      <div class="field-row">
+        <span class="lbl">رقم الهوية</span>
+        <span class="val" id="d-sid">—</span>
+      </div>
+      <div class="field-row">
+        <span class="lbl">الصف</span>
+        <span class="val" id="d-class">—</span>
+      </div>
+      <div class="field-row">
+        <span class="lbl">جوال ولي الأمر</span>
+        <span class="val" id="d-mobile-view">—</span>
+        <input class="edit-input" id="d-mobile-edit" style="display:none" type="tel" placeholder="05xxxxxxxx">
+      </div>
+      <div class="field-row" style="border-bottom:none;">
+        <span class="lbl">ملاحظات</span>
+        <span class="val" id="d-notes-view">—</span>
+        <input class="edit-input" id="d-notes-edit" style="display:none" type="text">
+      </div>
+      <div class="actions-row" id="edit-actions">
+        <button class="btn btn-edit" id="btn-toggle-edit" onclick="toggleEdit()">تعديل البيانات</button>
+      </div>
+      <div class="actions-row" id="call-actions">
+        <a class="btn btn-call" id="btn-call">📞 اتصال</a>
+        <a class="btn btn-wa" id="btn-wa" target="_blank">💬 واتساب</a>
+      </div>
+    </div>
+
+    <div class="section-title"><span class="dot" style="background:var(--rose);"></span>الحالة الصحية</div>
+    <div id="health-list"></div>
+
+    <div class="section-title"><span class="dot" style="background:var(--ochre);"></span>الحالة الاجتماعية</div>
+    <div id="social-list"></div>
+  </div>
+</div>
+
+<div class="save-toast" id="toast">تم الحفظ</div>
+
+<script>
+const SUPABASE_URL = "https://hqppacntsggeyxfkobjn.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhxcHBhY250c2dnZXl4ZmtvYmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ5Mjg1NjYsImV4cCI6MjA5MDUwNDU2Nn0.i2kNNTgI7JgJ7bN1Sudie543s_84YYDuPc9rqbSoXJY";
+const GATE_PASSWORD = "2030";
+
+const sbHeaders = {
+  "apikey": SUPABASE_KEY,
+  "Authorization": "Bearer " + SUPABASE_KEY,
+  "Content-Type": "application/json"
+};
+
+let ALL_STUDENTS = [];
+let CURRENT_STAGE = "الكل";
+let CURRENT_STUDENT = null;
+
+// ---------- Gate ----------
+function checkGate(){
+  const val = document.getElementById('gate-pass').value.trim();
+  if(val === GATE_PASSWORD){
+    document.getElementById('gate').classList.add('hidden');
+    document.getElementById('app').classList.add('visible');
+    sessionStorage.setItem('khyat_dir_ok','1');
+    loadStudents();
+  } else {
+    document.getElementById('gate-error').textContent = 'كلمة المرور غير صحيحة';
+  }
+}
+document.getElementById('gate-pass').addEventListener('keydown', e=>{ if(e.key==='Enter') checkGate(); });
+if(sessionStorage.getItem('khyat_dir_ok') === '1'){
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('app').classList.add('visible');
+  loadStudents();
+}
+
+// ---------- Arabic-normalized search ----------
+function normalize(str){
+  if(!str) return '';
+  return str.toString()
+    .replace(/[\u064B-\u0652]/g,'')
+    .replace(/[إأآا]/g,'ا')
+    .replace(/ى/g,'ي')
+    .replace(/ة/g,'ه')
+    .replace(/\s+/g,' ')
+    .trim()
+    .toLowerCase();
+}
+function normPhone(str){ return (str||'').toString().replace(/[^0-9]/g,''); }
+
+// ---------- Load ----------
+async function loadStudents(){
+  document.getElementById('list').innerHTML = '<div class="loading"><div class="spin"></div>جارٍ تحميل بيانات الطلاب…</div>';
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/students?select=*&order=class_grade.asc,class_section.asc,student_name.asc`, {headers: sbHeaders});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    ALL_STUDENTS = await res.json();
+    document.getElementById('count-pill').textContent = ALL_STUDENTS.length + ' طالب';
+    buildStageTabs();
+    renderList();
+  }catch(err){
+    document.getElementById('list').innerHTML = '<div class="empty">تعذّر تحميل البيانات.<br>تحقق من الاتصال بالإنترنت وحاول مجددًا.</div>';
+    console.error(err);
+  }
+}
+
+function buildStageTabs(){
+  const grades = Array.from(new Set(ALL_STUDENTS.map(s=>s.class_grade).filter(Boolean)));
+  const wrap = document.getElementById('stage-tabs');
+  wrap.innerHTML = '';
+  const mkBtn = (label)=>{
+    const b = document.createElement('button');
+    b.textContent = label;
+    b.className = (CURRENT_STAGE===label) ? 'active' : '';
+    b.onclick = ()=>{ CURRENT_STAGE = label; buildStageTabs(); renderList(); };
+    return b;
+  };
+  wrap.appendChild(mkBtn('الكل'));
+  grades.forEach(g=> wrap.appendChild(mkBtn(g)));
+}
+
+function renderList(){
+  const q = normalize(document.getElementById('search').value);
+  const qPhone = normPhone(document.getElementById('search').value);
+  let rows = ALL_STUDENTS;
+  if(CURRENT_STAGE !== 'الكل') rows = rows.filter(s=>s.class_grade === CURRENT_STAGE);
+  if(q){
+    rows = rows.filter(s=>{
+      const hay = normalize([s.student_name, s.class_label, s.student_id].join(' '));
+      const phoneHay = normPhone(s.guardian_mobile);
+      return hay.includes(q) || (qPhone && phoneHay.includes(qPhone));
+    });
+  }
+  const list = document.getElementById('list');
+  if(rows.length === 0){
+    list.innerHTML = '<div class="empty">لا يوجد طلاب مطابقون لهذا البحث</div>';
+    return;
+  }
+  list.innerHTML = rows.map(s=>{
+    const initial = (s.student_name||'؟').trim().charAt(0);
+    const classText = s.class_label || [s.class_grade, s.class_section].filter(Boolean).join(' - ') || '—';
+    return `<div class="s-card" onclick="openStudent('${s.student_id}')">
+      <div class="s-avatar">${initial}</div>
+      <div class="s-info">
+        <div class="name">${s.student_name||'—'}</div>
+        <div class="meta">
+          <span>${classText}</span>
+          <span>${s.student_id||''}</span>
+        </div>
+      </div>
+      <span class="chev">‹</span>
+    </div>`;
+  }).join('');
+}
+document.getElementById('search').addEventListener('input', renderList);
+
+// ---------- Detail sheet ----------
+async function openStudent(studentId){
+  const s = ALL_STUDENTS.find(x=>x.student_id === studentId);
+  if(!s) return;
+  CURRENT_STUDENT = s;
+  document.getElementById('sh-name').textContent = s.student_name || '—';
+  const classText = s.class_label || [s.class_grade, s.class_section].filter(Boolean).join(' - ') || '—';
+  document.getElementById('sh-idclass').textContent = `${s.student_id||'—'} · ${classText}`;
+  document.getElementById('d-sid').textContent = s.student_id || '—';
+  document.getElementById('d-class').textContent = classText;
+  setEditMode(false);
+  document.getElementById('d-mobile-view').textContent = s.guardian_mobile || '—';
+  document.getElementById('d-notes-view').textContent = s.notes || '—';
+  document.getElementById('d-mobile-edit').value = s.guardian_mobile || '';
+  document.getElementById('d-notes-edit').value = s.notes || '';
+
+  const phone = normPhone(s.guardian_mobile);
+  const intlPhone = phone.startsWith('0') ? '966'+phone.slice(1) : phone;
+  const callBtn = document.getElementById('btn-call');
+  const waBtn = document.getElementById('btn-wa');
+  if(phone){
+    callBtn.href = 'tel:'+phone;
+    waBtn.href = 'https://wa.me/'+intlPhone;
+    callBtn.style.opacity = 1; waBtn.style.opacity = 1;
+  } else {
+    callBtn.removeAttribute('href'); waBtn.removeAttribute('href');
+    callBtn.style.opacity = .4; waBtn.style.opacity = .4;
+  }
+
+  document.getElementById('overlay').classList.add('visible');
+  document.getElementById('sheet').classList.add('visible');
+
+  loadCases('health_cases', 'health-type', 'health-list', s);
+  loadCases('social_cases', 'social_type', 'social-list', s);
+}
+
+function closeSheet(){
+  document.getElementById('overlay').classList.remove('visible');
+  document.getElementById('sheet').classList.remove('visible');
+  setEditMode(false);
+}
+
+function setEditMode(on){
+  document.getElementById('d-mobile-view').style.display = on ? 'none' : 'inline';
+  document.getElementById('d-notes-view').style.display = on ? 'none' : 'inline';
+  document.getElementById('d-mobile-edit').style.display = on ? 'inline-block' : 'none';
+  document.getElementById('d-notes-edit').style.display = on ? 'inline-block' : 'none';
+  document.getElementById('edit-actions').innerHTML = on
+    ? '<button class="btn btn-save" onclick="saveStudent()">حفظ التعديلات</button><button class="btn btn-edit" onclick="toggleEdit()">إلغاء</button>'
+    : '<button class="btn btn-edit" id="btn-toggle-edit" onclick="toggleEdit()">تعديل البيانات</button>';
+}
+function toggleEdit(){
+  const editing = document.getElementById('d-mobile-edit').style.display === 'inline-block';
+  setEditMode(!editing);
+}
+
+async function saveStudent(){
+  const mobile = document.getElementById('d-mobile-edit').value.trim();
+  const notes = document.getElementById('d-notes-edit').value.trim();
+  try{
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/students?student_id=eq.${encodeURIComponent(CURRENT_STUDENT.student_id)}`, {
+      method:'PATCH',
+      headers: {...sbHeaders, 'Prefer':'return=representation'},
+      body: JSON.stringify({guardian_mobile: mobile, notes: notes, updated_at: new Date().toISOString()})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    CURRENT_STUDENT.guardian_mobile = mobile;
+    CURRENT_STUDENT.notes = notes;
+    const idx = ALL_STUDENTS.findIndex(x=>x.student_id === CURRENT_STUDENT.student_id);
+    if(idx>-1){ ALL_STUDENTS[idx].guardian_mobile = mobile; ALL_STUDENTS[idx].notes = notes; }
+    document.getElementById('d-mobile-view').textContent = mobile || '—';
+    document.getElementById('d-notes-view').textContent = notes || '—';
+    setEditMode(false);
+    showToast('تم حفظ التعديلات');
+    renderList();
+    openStudent(CURRENT_STUDENT.student_id);
+  }catch(err){
+    showToast('تعذّر الحفظ، حاول مجددًا');
+    console.error(err);
+  }
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
+async function loadCases(table, typeField, containerId, student){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '<div class="case-empty">جارٍ التحميل…</div>';
+  try{
+    let url = `${SUPABASE_URL}/rest/v1/${table}?select=*&order=vdate.desc,created_at.desc`;
+    if(student.student_id){
+      url += `&student_id=eq.${encodeURIComponent(student.student_id)}`;
+    } else {
+      url += `&student_name=eq.${encodeURIComponent(student.student_name)}`;
+    }
+    const res = await fetch(url, {headers: sbHeaders});
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const rows = await res.json();
+    if(rows.length === 0){
+      el.innerHTML = '<div class="case-empty">لا توجد حالة مسجلة</div>';
+      return;
+    }
+    el.innerHTML = rows.map(r=>`
+      <div class="case-item">
+        <div class="top">
+          <span class="type">${r[typeField] || 'حالة'}</span>
+          <span class="date">${r.vdate || ''}</span>
+        </div>
+        ${r.description ? `<div class="desc">${r.description}</div>` : ''}
+        ${r.recommendations ? `<div class="rec">التوصية: ${r.recommendations}</div>` : ''}
+      </div>
+    `).join('');
+  }catch(err){
+    el.innerHTML = '<div class="case-empty">تعذّر تحميل هذا القسم</div>';
+    console.error(err);
+  }
+}
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
