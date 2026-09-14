@@ -315,9 +315,17 @@ function normPhone(str){ return (str||'').toString().replace(/[^0-9]/g,''); }
 async function loadStudents(){
   document.getElementById('list').innerHTML = '<div class="loading"><div class="spin"></div>جارٍ تحميل بيانات الطلاب…</div>';
   try{
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/students?select=*&order=class_grade.asc,class_section.asc,student_name.asc`, {headers: sbHeaders});
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/khyat_students?select=*&order=class_section.asc,student_name.asc`, {headers: sbHeaders});
     if(!res.ok) throw new Error('HTTP '+res.status);
     ALL_STUDENTS = await res.json();
+    const gradeRank = {'الأول متوسط':1,'الثاني متوسط':2,'الثالث متوسط':3};
+    ALL_STUDENTS.sort((a,b)=>{
+      const ra = gradeRank[a.class_grade]||99, rb = gradeRank[b.class_grade]||99;
+      if(ra!==rb) return ra-rb;
+      const sa = parseInt(a.class_section)||0, sb = parseInt(b.class_section)||0;
+      if(sa!==sb) return sa-sb;
+      return (a.student_name||'').localeCompare(b.student_name||'','ar');
+    });
     document.getElementById('count-pill').textContent = ALL_STUDENTS.length + ' طالب';
     buildStageTabs();
     renderList();
@@ -437,7 +445,7 @@ async function saveStudent(){
   const mobile = document.getElementById('d-mobile-edit').value.trim();
   const notes = document.getElementById('d-notes-edit').value.trim();
   try{
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/students?student_id=eq.${encodeURIComponent(CURRENT_STUDENT.student_id)}`, {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/khyat_students?student_id=eq.${encodeURIComponent(CURRENT_STUDENT.student_id)}`, {
       method:'PATCH',
       headers: {...sbHeaders, 'Prefer':'return=representation'},
       body: JSON.stringify({guardian_mobile: mobile, notes: notes, updated_at: new Date().toISOString()})
