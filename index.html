@@ -172,6 +172,7 @@
   .case-item .date{font-size:11.5px; color:var(--ink-soft);}
   .case-item .desc{font-size:13px; color:var(--ink-soft); line-height:1.7;}
   .case-item .rec{font-size:12.5px; color:var(--teal); margin-top:6px; line-height:1.6;}
+  .case-item .custody{font-size:12.5px; color:var(--ochre-deep); margin-top:4px; font-weight:700;}
   .case-empty{font-size:13px; color:#9aa5c0; padding:10px 2px;}
   .save-toast{
     position:fixed; bottom:24px; right:50%; transform:translateX(50%);
@@ -498,6 +499,7 @@ async function loadCases(table, typeField, containerId, student){
           <span class="date">${r.vdate || ''}</span>
         </div>
         ${r.description ? `<div class="desc">${r.description}</div>` : ''}
+        ${r.custody ? `<div class="custody">الحضانة: ${r.custody}</div>` : ''}
         ${r.recommendations ? `<div class="rec">التوصية: ${r.recommendations}</div>` : ''}
       </div>
     `).join('');
